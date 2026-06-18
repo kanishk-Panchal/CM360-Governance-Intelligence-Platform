@@ -11,8 +11,13 @@ connectDB();
 
 const app = express();
 
-app.use(cors());
-app.use(express.json()); 
+app.use(cors({
+  origin: [
+    process.env.FRONTEND_URL, // Allows your live Vercel site
+    'http://localhost:5173'   // Allows your local laptop for testing
+  ],
+  credentials: true
+}));app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 
 
