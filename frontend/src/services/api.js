@@ -1,8 +1,9 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api', //  Express server 
-});
+baseURL: isProduction 
+    ? 'https://cm360.up.railway.app/api' 
+    : 'http://localhost:5000/api',});
 
 API.interceptors.request.use(
   (config) => {
