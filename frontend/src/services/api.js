@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+
+const isProduction = import.meta.env.PROD;
 const API = axios.create({
 baseURL: isProduction 
     ? 'https://cm360.up.railway.app/api' 
