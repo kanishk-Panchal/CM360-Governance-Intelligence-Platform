@@ -4,7 +4,7 @@ import axios from 'axios';
 const isProduction = import.meta.env.PROD;
 const API = axios.create({
 baseURL: isProduction 
-    ? 'https://cm360-backend.onrender.com' 
+    ? 'https://cm360-backend.onrender.com/api' 
     : 'http://localhost:5000/api',});
 
 API.interceptors.request.use(
