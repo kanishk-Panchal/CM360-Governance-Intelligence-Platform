@@ -106,3 +106,77 @@ export const updateComplaintStatus = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server Error', error: error.message });
   }
 };
+
+
+
+
+
+export const getDashboardStats = async (req, res) => {
+  try {
+    // 1. Active Complaints (Open, Assigned, or In Progress)
+    const activeComplaints = await Complaint.countDocuments({
+      status: { $in: ['Open', 'Assigned', 'In Progress'] }
+    });
+
+    // 2. Critical Alerts & Immediate Action
+    const criticalAlerts = await Complaint.countDocuments({ 
+      priority: 'CRITICAL',
+      status: { $in: ['Open', 'Assigned'] } // Only unresolved criticals
+    });
+
+    // 3. Reopened Complaints (Citizen rejected the fix)
+    const reopenedComplaints = await Complaint.countDocuments({ 
+      status: 'Reopened' 
+    });
+
+    // 4. Citizen Trust Index (Percentage of closed tickets verified by citizens)
+    const closedComplaints = await Complaint.countDocuments({ status: 'Closed' });
+    const verifiedComplaints = await Complaint.countDocuments({ 
+      status: 'Closed', 
+      citizenVerified: true 
+    });
+    
+    const citizenTrustIndex = closedComplaints === 0 
+      ? 0 
+      : Math.round((verifiedComplaints / closedComplaints) * 100);
+
+    // 5. Accountability Score (Percentage of total tickets resolved)
+    const totalComplaints = await Complaint.countDocuments();
+    const resolvedComplaints = await Complaint.countDocuments({ 
+      status: { $in: ['Resolved_Pending_Verification', 'Closed'] } 
+    });
+    
+    const accountabilityScore = totalComplaints === 0 
+      ? 0 
+      : Math.round((resolvedComplaints / totalComplaints) * 100);
+
+    // 6. District Hotspot Analysis (MongoDB Aggregation Pipeline)
+    const districtHotspots = await Complaint.aggregate([
+      { 
+        $group: { 
+          _id: "$location.district", // Group by district name
+          count: { $sum: 1 }         // Count how many in each district
+        } 
+      },
+      { $sort: { count: -1 } }       // Sort highest to lowest
+    ]);
+
+    // Send the massive data payload back to the CM Dashboard
+    res.status(200).json({
+      success: true,
+      data: {
+        activeComplaints,
+        criticalAlerts,
+        reopenedComplaints,
+        citizenTrustIndex,
+        accountabilityScore,
+        districtHotspots,
+        totalComplaints
+      }
+    });
+
+  } catch (error) {
+    console.error("Dashboard Stats Error:", error);
+    res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+  }
+};

@@ -2,13 +2,15 @@ import express from 'express';
 import { 
   createComplaint, 
   getComplaints, 
-  updateComplaintStatus 
+  updateComplaintStatus,
+  getDashboardStats
 } from '../controllers/complaintController.js';
 import { protect } from '../middlewares/authMiddleware.js';
 import { upload } from '../config/cloudinary.js';
 
 const router = express.Router();
 
+router.get('/stats', getDashboardStats);
 router.route('/')
   .get(protect, getComplaints)
   .post(protect, upload.single('image'), createComplaint);

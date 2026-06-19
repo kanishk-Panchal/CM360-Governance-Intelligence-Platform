@@ -1,9 +1,12 @@
+import DistrictMap from '../components/DistrictMap';
+// **********************************************
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
 import {
   AlertOctagon, TrendingDown, Users, CheckCircle,
-  ShieldAlert, Award, Bell, ChevronRight, Activity, Moon, Sun
+  ShieldAlert, Award, Bell, Activity, Moon, Sun, LogOut
 } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -11,14 +14,30 @@ import {
 } from 'recharts';
 
 export default function CMDashboard() {
-  const { user } = useAuth();
-  
-  
+  const { user, setUser } = useAuth();
+  const navigate = useNavigate();
   const [isDark, setIsDark] = useState(false);
-
-  
   const [complaints, setComplaints] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+
+
+
+// 1. Create a state to hold the current time
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // 2. Create a timer that updates that state every 1000 milliseconds (1 second)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    // This cleanup function stops the timer if the user navigates away from the dashboard
+    return () => clearInterval(timer);
+  }, []);
+
+
+
 
   // Fetch Live MongoDB Data
   useEffect(() => {
@@ -35,26 +54,30 @@ export default function CMDashboard() {
     fetchDashboardData();
   }, []);
 
-  
-  
-  
+  // Handle Logout Action
+  const handleLogout = () => {
+    localStorage.removeItem('cm360_token');
+    localStorage.removeItem('cm360_user');
+    setUser(null);
+    navigate('/login');
+  };
+
+  // UI Calculations
   const totalComplaints = complaints.length;
   const pendingIssues = complaints.filter(c => ['Open', 'Assigned', 'In Progress'].includes(c.status)).length;
   const criticalAlerts = complaints.filter(c => c.priority === 'CRITICAL' && c.status !== 'Closed').length;
-  const verifiedResolutions = complaints.filter(c => c.status === 'Closed' && c.citizenVerified).length; // Ensure your backend sets citizenVerified
+  const verifiedResolutions = complaints.filter(c => c.status === 'Closed' && c.citizenVerified).length;
   const reopenedIssues = complaints.filter(c => c.status === 'Reopened').length;
 
-  
   const effectiveResolutions = verifiedResolutions > 0 ? verifiedResolutions : complaints.filter(c => c.status === 'Closed').length;
-
   const verifiedRate = totalComplaints ? ((effectiveResolutions / totalComplaints) * 100).toFixed(1) : 0;
   const falseClosureRate = totalComplaints ? ((reopenedIssues / totalComplaints) * 100).toFixed(1) : 0;
 
-  // 2. District Heatmap 
+  // District Heatmap processing (Restored Stacked Details)
   const processDistrictData = () => {
     const districtMap = {};
     complaints.forEach(c => {
-      const dist = c.location.district;
+      const dist = c.location?.district || "Unknown";
       if (!districtMap[dist]) {
         districtMap[dist] = { name: dist, critical: 0, pending: 0, resolved: 0 };
       }
@@ -66,15 +89,14 @@ export default function CMDashboard() {
   };
   const liveDistrictData = processDistrictData();
 
-  // 3. Live Critical Alerts
+  // Live Critical Alerts
   const liveAlertsFeed = complaints
     .filter(c => c.priority === 'CRITICAL' || c.priority === 'High')
     .filter(c => c.status !== 'Closed')
-    .slice(0, 4); // Show top 4 most recent
+    .slice(0, 4);
 
-  // 4. LIVE DEPARTMENT ACCOUNTABILITY 
+  // Department Accountability processing
   const processDepartmentScores = () => {
-    // Map Categories to Official Departments
     const deptMap = {
       'Roads & Traffic': { name: 'Public Works (PWD)', total: 0, resolved: 0 },
       'Water & Sanitation': { name: 'Water Board (DJB)', total: 0, resolved: 0 },
@@ -83,38 +105,31 @@ export default function CMDashboard() {
       'Public Safety': { name: 'Home Dept (Police)', total: 0, resolved: 0 }
     };
 
-    
     complaints.forEach(c => {
       const targetDept = deptMap[c.category];
       if (targetDept) {
         targetDept.total += 1;
         if (c.status === 'Closed') {
-          targetDept.resolved += 1; // Only verified closures boost the score
+          targetDept.resolved += 1;
         }
       }
     });
 
-    // Calculate Score, Status
     return Object.values(deptMap)
-      .filter(dept => dept.total > 0) // Only display departments with active/past issues
+      .filter(dept => dept.total > 0)
       .map(dept => {
         const score = Math.round((dept.resolved / dept.total) * 100);
         let status = 'Needs Review';
         if (score >= 90) status = 'Excellent';
         else if (score >= 80) status = 'Good';
 
-        return {
-          dept: dept.name,
-          score: score,
-          status: status
-        };
+        return { dept: dept.name, score: score, status: status };
       })
-      .sort((a, b) => b.score - a.score); 
+      .sort((a, b) => b.score - a.score);
   };
 
   const liveDepartmentScores = processDepartmentScores();
 
-  
   const getScoreColor = (score) => score >= 90 ? '#16a34a' : score >= 80 ? '#2563eb' : '#dc2626';
   const getScoreBarColor = (score) => score >= 90 ? 'bg-green-500' : score >= 80 ? 'bg-blue-500' : 'bg-red-500';
   const getStatusBadge = (score) => {
@@ -129,52 +144,75 @@ export default function CMDashboard() {
     <div className={`${isDark ? 'dark' : ''}`}>
       <div className="min-h-screen bg-[#F4F5F7] dark:bg-gray-900 transition-colors duration-300 p-6 pb-20 font-sans text-gray-900 dark:text-gray-100">
 
-        
-        <header className="flex items-start justify-between mb-8">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">
-              Governance Intelligence Platform
-            </p>
-            <h1 className="text-2xl font-bold tracking-tight">
-              CM360 Command Center
-            </h1>
 
-          <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1 mt-1">
-            Real-Time Governance & Accountability Monitoring
-            </p>
+{/* ****************************************************************** */}
 
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              {user.name} &nbsp;·&nbsp; Live data as of {new Date().toLocaleTimeString()}
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            
-            
-            <button 
-              onClick={toggleTheme}
-              className="w-9 h-9 flex items-center justify-center rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-              {isDark ? <Sun size={16} className="text-amber-400" /> : <Moon size={16} />}
-            </button>
+        {/* Header Block */}
+        {/* Header Block */}
+<header className="flex flex-col md:flex-row md:items-start justify-between gap-5 mb-8">
+  
+  {/* Left Side: Text */}
+  <div className="w-full md:w-auto">
+    <p className="text-[10px] md:text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">
+      Governance Intelligence Platform
+    </p>
+    <h1 className="text-xl sm:text-2xl font-bold tracking-tight leading-tight">
+      CM360 Command Center
+    </h1>
+    {/* This long subtitle is hidden on mobile, but appears on laptops (hidden md:block) */}
+    <p className="hidden md:block text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1 mt-1">
+      Real-Time Governance & Accountability Monitoring
+    </p>
+    <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">
+      {user?.name} · Live data as of {currentTime ? currentTime.toLocaleTimeString() : new Date().toLocaleTimeString()}
+    </p>
+  </div>
 
-            <div className="relative">
-              <button className="w-9 h-9 flex items-center justify-center rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                <Bell size={16} />
-              </button>
-              {criticalAlerts > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                  {criticalAlerts}
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2">
-              <div className="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-white text-[10px] font-bold">
-                {user.name?.charAt(0)}
-              </div>
-              <span className="text-sm font-medium">{user.name}</span>
-            </div>
-          </div>
-        </header>
+  {/* Right Side: Action Buttons */}
+  {/* On mobile, we add a subtle border on top and space them out slightly */}
+  <div className="flex items-center gap-2 md:gap-3 w-full md:w-auto justify-start md:justify-end border-t border-gray-200 dark:border-gray-800 md:border-0 pt-4 md:pt-0">
+    
+    <button 
+      onClick={toggleTheme}
+      className="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+    >
+      {isDark ? <Sun size={16} className="text-amber-400" /> : <Moon size={16} />}
+    </button>
+
+    <div className="relative shrink-0">
+      <button className="w-9 h-9 flex items-center justify-center rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+        <Bell size={16} />
+      </button>
+      {criticalAlerts > 0 && (
+        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+          {criticalAlerts}
+        </span>
+      )}
+    </div>
+
+    {/* Avatar Token */}
+    <div className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 shrink-0">
+      <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-indigo-600 flex items-center justify-center text-white text-[10px] font-bold">
+        {user?.name?.charAt(0) || 'U'}
+      </div>
+      <span className="text-xs md:text-sm font-medium truncate max-w-[80px] md:max-w-none">{user?.name}</span>
+    </div>
+
+    {/* Logout Utility */}
+    <button 
+      onClick={handleLogout}
+      className="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-100 transition-colors ml-auto md:ml-0"
+    >
+      <LogOut size={16} />
+    </button>
+
+  </div>
+</header>
+
+
+
+
+{/* ****************************************************************** */}
 
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
@@ -182,7 +220,7 @@ export default function CMDashboard() {
           </div>
         ) : (
           <>
-      
+            {/* Status Briefing Banner */}
             <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 mb-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 transition-colors">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800/50 flex items-center justify-center">
@@ -193,13 +231,13 @@ export default function CMDashboard() {
                     Live Status Briefing
                   </p>
                   <p className="text-sm font-medium">
-                    {criticalAlerts} critical alerts &nbsp;·&nbsp; {totalComplaints} total records scanned &nbsp;·&nbsp; {verifiedRate}% verified resolution rate
+                    {criticalAlerts} critical alerts · {totalComplaints} total records scanned · {verifiedRate}% verified resolution rate
                   </p>
                 </div>
               </div>
             </div>
 
-          
+            {/* Metric Summary Layout */}
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
               <MetricCard
                 title="Active Complaints"
@@ -236,16 +274,23 @@ export default function CMDashboard() {
               />
             </div>
 
-            
+            {/* Advanced Analytical Visualization Blocks */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+               
 
-              
+
+
+
+
+
+
+              {/* District Hotspot (Restored Stacked Layout and Legends) */}
               <div className="lg:col-span-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 transition-colors">
                 <div className="flex items-start justify-between mb-6">
                   <div>
                     <h2 className="text-base font-bold">District Hotspot Analysis</h2>
                     <p className="text-xs text-gray-500 mt-0.5">
-                     Live distribution of grievances across Delhi districts
+                      Live distribution of grievances across Delhi districts
                     </p>
                   </div>
                   <span className="flex items-center gap-1.5 text-xs font-semibold text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 px-2.5 py-1 rounded-full">
@@ -279,10 +324,39 @@ export default function CMDashboard() {
                 </div>
               </div>
 
-              
-              <div className="space-y-5">
 
-                
+
+{/* ************************************************************************ */}
+
+<div className="h-[400px] w-full bg-gray-50 dark:bg-gray-800/50 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700/50 p-2 relative">
+  {/* The Map Component */}
+  <DistrictMap liveData={liveDistrictData} />
+  
+  {/* Floating Legend */}
+  <div className="absolute top-4 right-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-3 rounded-lg shadow-sm flex flex-col gap-2">
+    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Alert Severity</p>
+    <div className="flex items-center gap-2 text-xs font-medium">
+      <span className="w-3 h-3 rounded-sm bg-[#ef4444]"></span> Critical (20+)
+    </div>
+    <div className="flex items-center gap-2 text-xs font-medium">
+      <span className="w-3 h-3 rounded-sm bg-[#f59e0b]"></span> Elevated (10+)
+    </div>
+    <div className="flex items-center gap-2 text-xs font-medium">
+      <span className="w-3 h-3 rounded-sm bg-[#10b981]"></span> Safe (0-9)
+    </div>
+  </div>
+</div>
+
+{/* ********************************************************************************* */}
+
+
+
+
+
+              {/* Action Streams & Scores Right Panel */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full lg:col-span-3">
+
+                {/* Immediate Actions Feed Container */}
                 <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 transition-colors">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-sm font-bold flex items-center gap-2">
@@ -311,7 +385,7 @@ export default function CMDashboard() {
                   </div>
                 </div>
 
-                
+                {/* Restored Complete Department Score Tracker */}
                 <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 transition-colors">
                   <div className="flex items-center gap-2 mb-1">
                     <Award size={16} className="text-amber-500" />
@@ -351,6 +425,7 @@ export default function CMDashboard() {
   );
 }
 
+// Global Reusable Layout Templates
 const MetricCard = ({ title, value, delta, deltaType, icon, iconBg, isAlert }) => {
   const deltaColors = {
     success: 'text-green-600 dark:text-green-400',

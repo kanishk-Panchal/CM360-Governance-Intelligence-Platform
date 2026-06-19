@@ -1,18 +1,27 @@
-import React, { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  
-  const [user, setUser] = useState({
-    id: 'user_123',
-    name: 'Rahul Kumar',
-    role: 'Officer', 
-    token: 'jwt_mock_token'
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('cm360_user');
+    return savedUser ? JSON.parse(savedUser) : null; 
   });
 
+  const login = (userData, token) => {
+    localStorage.setItem('cm360_token', token);
+    localStorage.setItem('cm360_user', JSON.stringify(userData)); 
+    setUser(userData);
+  };
+
+  const logout = () => {
+    localStorage.removeItem('cm360_token');
+    localStorage.removeItem('cm360_user');
+    setUser(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
