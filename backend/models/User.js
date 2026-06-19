@@ -12,6 +12,8 @@ const userSchema = new mongoose.Schema({
     default: 'Citizen' 
   },
 
+
+  district: { type: String, required: false },
   department: { type: String, required: false } 
 }, { timestamps: true });
 

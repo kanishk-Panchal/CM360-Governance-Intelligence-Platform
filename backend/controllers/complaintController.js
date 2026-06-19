@@ -1,5 +1,5 @@
 import Complaint from '../models/Complaint.js';
-
+import User from '../models/User.js'; // MUST IMPORT USER MODEL FOR ROUTING
 
 export const createComplaint = async (req, res) => {
   try {
@@ -11,6 +11,13 @@ export const createComplaint = async (req, res) => {
       evidenceUrl = req.file.path; 
     }
 
+    // --- MAGIC ROUTING START ---
+    // Look in the database for an Officer assigned to this exact district
+    const matchingOfficer = await User.findOne({ 
+      role: 'Officer', 
+      district: district 
+    });
+    // --- MAGIC ROUTING END ---
     
     const complaint = await Complaint.create({
       title,
@@ -22,12 +29,18 @@ export const createComplaint = async (req, res) => {
         address
       },
       reportedBy: req.user._id, 
+      resolutionEvidence: evidenceUrl ? [evidenceUrl] : [],
       
-      resolutionEvidence: evidenceUrl ? [evidenceUrl] : [] 
+      // Assign the specific officer if found, otherwise null
+      assignedTo: matchingOfficer ? matchingOfficer._id : null,
+      
+      // Instantly bump status if an officer was successfully matched!
+      status: matchingOfficer ? 'Assigned' : 'Open'
     });
 
     res.status(201).json({
       success: true,
+      message: matchingOfficer ? "Complaint automatically routed to district officer." : "Complaint filed (Unassigned).",
       data: complaint
     });
 
@@ -46,13 +59,14 @@ export const getComplaints = async (req, res) => {
     if (req.user.role === 'Citizen') {
       query.reportedBy = req.user._id; 
     } else if (req.user.role === 'Officer') {
-      query.department = req.user.department; 
+      // UPDATED: Now officers only see tickets specifically assigned to them!
+      query.assignedTo = req.user._id; 
     }
   
-
-    // 2. Fetch from MongoDB 
+    // Fetch from MongoDB 
     const complaints = await Complaint.find(query)
       .populate('reportedBy', 'name email')
+      .populate('assignedTo', 'name phone department') // Also populate officer details
       .sort({ createdAt: -1 }); 
 
     res.status(200).json({ success: true, count: complaints.length, data: complaints });
@@ -71,9 +85,6 @@ export const updateComplaintStatus = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Complaint not found' });
     }
 
-    
-
-    
     if (status === 'Resolved_Pending_Verification' && req.user.role === 'Officer') {
       if (!req.file) {
         return res.status(400).json({ 
@@ -84,7 +95,6 @@ export const updateComplaintStatus = async (req, res) => {
       complaint.resolutionEvidence.push(req.file.path); 
       complaint.status = status;
     }
-
   
     else if (status === 'Closed' && req.user.role === 'Citizen') {
       complaint.status = 'Closed';
@@ -94,7 +104,6 @@ export const updateComplaintStatus = async (req, res) => {
       complaint.status = 'Reopened';
       complaint.citizenVerified = false;
     }
-
     else {
       complaint.status = status;
     }
@@ -106,9 +115,6 @@ export const updateComplaintStatus = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server Error', error: error.message });
   }
 };
-
-
-
 
 
 export const getDashboardStats = async (req, res) => {
@@ -151,6 +157,7 @@ export const getDashboardStats = async (req, res) => {
       : Math.round((resolvedComplaints / totalComplaints) * 100);
 
     // 6. District Hotspot Analysis (MongoDB Aggregation Pipeline)
+   // 6. District Hotspot Analysis (MongoDB Aggregation Pipeline)
     const districtHotspots = await Complaint.aggregate([
       { 
         $group: { 

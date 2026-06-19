@@ -8,7 +8,6 @@ export default function LoginScreen() {
   const { setUser } = useAuth();
   const navigate = useNavigate();
   
-  
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -23,28 +22,33 @@ export default function LoginScreen() {
     setErrorMessage('');
 
     try {
-      
       const response = await API.post('/auth/login', formData);
       const userData = response.data;
 
-      
-      localStorage.setItem('cm360_token', userData.token);
+      // 1. Save the token for API requests
+      sessionStorage.setItem('cm360_token', userData.token);
 
-      
+      // 2. Update Context (AuthContext will automatically save this to localStorage now!)
       setUser({
         id: userData._id,
         name: userData.name,
         role: userData.role,
         department: userData.department,
+        district: userData.district, // Make sure district comes through!
         token: userData.token
       });
 
-      
-      navigate('/dashboard');
+      // 3. Route to the correct dashboard based on role
+      if (userData.role === 'Admin' || userData.role === 'CM') {
+        navigate('/dashboard');
+      } else if (userData.role === 'Officer') {
+        navigate('/officer');
+      } else {
+        navigate('/citizen'); // Assuming default is Citizen
+      }
 
     } catch (error) {
       console.error("Login Error:", error);
-      
       setErrorMessage(error.response?.data?.message || 'Server connection failed.');
     } finally {
       setIsSubmitting(false);
@@ -55,7 +59,6 @@ export default function LoginScreen() {
     <div className="min-h-screen bg-[#F4F5F7] flex flex-col justify-center items-center px-5 py-12 font-sans">
       <div className="w-full max-w-md bg-white border border-gray-200 rounded-3xl p-8 shadow-sm">
         
-        
         <div className="text-center mb-6">
           <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl mb-4">
             <ShieldCheck size={28} />
@@ -64,10 +67,10 @@ export default function LoginScreen() {
             CM360 <br />Governance Intelligence Platform
           </h2>
           <p className="text-sm text-gray-400 mt-1 font-medium">
-              Chief Minister's Grievance Monitoring & Accountability System          </p>
+             Chief Minister's Grievance Monitoring & Accountability System
+          </p>
         </div>
 
-        
         {errorMessage && (
           <div className="mb-6 p-3 bg-red-50 border border-red-200 text-red-600 text-xs font-medium rounded-xl flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
             <AlertCircle size={16} className="shrink-0" />
@@ -75,10 +78,7 @@ export default function LoginScreen() {
           </div>
         )}
 
-    
         <form onSubmit={handleLogin} className="space-y-5">
-          
-          
           <div>
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Email Address</label>
             <div className="relative mt-1">
@@ -91,7 +91,6 @@ export default function LoginScreen() {
             </div>
           </div>
 
-          
           <div>
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Password</label>
             <div className="relative mt-1">
@@ -104,7 +103,6 @@ export default function LoginScreen() {
             </div>
           </div>
 
-        
           <button
             type="submit" disabled={isSubmitting}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-bold transition-all shadow-sm active:scale-[0.99] disabled:opacity-50 mt-2 text-sm flex items-center justify-center gap-2"
@@ -123,7 +121,6 @@ export default function LoginScreen() {
           </button>
         </form>
 
-      
         <p className="mt-8 text-xs text-gray-400 text-center font-medium">
           New to the system?{' '}
           <Link to="/register" className="text-blue-600 font-bold hover:underline">

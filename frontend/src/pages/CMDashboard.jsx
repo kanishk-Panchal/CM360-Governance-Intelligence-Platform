@@ -20,10 +20,7 @@ export default function CMDashboard() {
   const [complaints, setComplaints] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-
-
-
-// 1. Create a state to hold the current time
+  // 1. Create a state to hold the current time
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // 2. Create a timer that updates that state every 1000 milliseconds (1 second)
@@ -37,16 +34,26 @@ export default function CMDashboard() {
   }, []);
 
 
-
-
-  // Fetch Live MongoDB Data
+  // Fetch Live MongoDB Data (BULLETPROOFED)
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         const response = await API.get('/complaints');
-        setComplaints(response.data.data);
+        
+        // Safely extract the array, no matter how Axios wraps it
+        const fetchedData = response.data.data || response.data || [];
+        setComplaints(fetchedData);
+        
       } catch (error) {
         console.error("Failed to fetch live data:", error);
+        
+        // If the backend rejects the old token, force a fresh sync!
+        if (error.response?.status === 401) {
+          alert("Security Sync: Database structure changed. Please log in again to sync your token.");
+          localStorage.removeItem('cm360_token');
+          localStorage.removeItem('cm360_user');
+          window.location.href = '/login';
+        }
       } finally {
         setIsLoading(false);
       }
@@ -144,73 +151,66 @@ export default function CMDashboard() {
     <div className={`${isDark ? 'dark' : ''}`}>
       <div className="min-h-screen bg-[#F4F5F7] dark:bg-gray-900 transition-colors duration-300 p-6 pb-20 font-sans text-gray-900 dark:text-gray-100">
 
-
 {/* ****************************************************************** */}
 
         {/* Header Block */}
-        {/* Header Block */}
-<header className="flex flex-col md:flex-row md:items-start justify-between gap-5 mb-8">
-  
-  {/* Left Side: Text */}
-  <div className="w-full md:w-auto">
-    <p className="text-[10px] md:text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">
-      Governance Intelligence Platform
-    </p>
-    <h1 className="text-xl sm:text-2xl font-bold tracking-tight leading-tight">
-      CM360 Command Center
-    </h1>
-    {/* This long subtitle is hidden on mobile, but appears on laptops (hidden md:block) */}
-    <p className="hidden md:block text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1 mt-1">
-      Real-Time Governance & Accountability Monitoring
-    </p>
-    <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">
-      {user?.name} · Live data as of {currentTime ? currentTime.toLocaleTimeString() : new Date().toLocaleTimeString()}
-    </p>
-  </div>
+        <header className="flex flex-col md:flex-row md:items-start justify-between gap-5 mb-8">
+          
+          {/* Left Side: Text */}
+          <div className="w-full md:w-auto">
+            <p className="text-[10px] md:text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">
+              Governance Intelligence Platform
+            </p>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight leading-tight">
+              CM360 Command Center
+            </h1>
+            <p className="hidden md:block text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1 mt-1">
+              Real-Time Governance & Accountability Monitoring
+            </p>
+            <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">
+              {user?.name} · Live data as of {currentTime ? currentTime.toLocaleTimeString() : new Date().toLocaleTimeString()}
+            </p>
+          </div>
 
-  {/* Right Side: Action Buttons */}
-  {/* On mobile, we add a subtle border on top and space them out slightly */}
-  <div className="flex items-center gap-2 md:gap-3 w-full md:w-auto justify-start md:justify-end border-t border-gray-200 dark:border-gray-800 md:border-0 pt-4 md:pt-0">
-    
-    <button 
-      onClick={toggleTheme}
-      className="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-    >
-      {isDark ? <Sun size={16} className="text-amber-400" /> : <Moon size={16} />}
-    </button>
+          {/* Right Side: Action Buttons */}
+          <div className="flex items-center gap-2 md:gap-3 w-full md:w-auto justify-start md:justify-end border-t border-gray-200 dark:border-gray-800 md:border-0 pt-4 md:pt-0">
+            
+            <button 
+              onClick={toggleTheme}
+              className="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              {isDark ? <Sun size={16} className="text-amber-400" /> : <Moon size={16} />}
+            </button>
 
-    <div className="relative shrink-0">
-      <button className="w-9 h-9 flex items-center justify-center rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-        <Bell size={16} />
-      </button>
-      {criticalAlerts > 0 && (
-        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-          {criticalAlerts}
-        </span>
-      )}
-    </div>
+            <div className="relative shrink-0">
+              <button className="w-9 h-9 flex items-center justify-center rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <Bell size={16} />
+              </button>
+              {criticalAlerts > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {criticalAlerts}
+                </span>
+              )}
+            </div>
 
-    {/* Avatar Token */}
-    <div className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 shrink-0">
-      <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-indigo-600 flex items-center justify-center text-white text-[10px] font-bold">
-        {user?.name?.charAt(0) || 'U'}
-      </div>
-      <span className="text-xs md:text-sm font-medium truncate max-w-[80px] md:max-w-none">{user?.name}</span>
-    </div>
+            {/* Avatar Token */}
+            <div className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 shrink-0">
+              <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-indigo-600 flex items-center justify-center text-white text-[10px] font-bold">
+                {user?.name?.charAt(0) || 'U'}
+              </div>
+              <span className="text-xs md:text-sm font-medium truncate max-w-[80px] md:max-w-none">{user?.name}</span>
+            </div>
 
-    {/* Logout Utility */}
-    <button 
-      onClick={handleLogout}
-      className="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-100 transition-colors ml-auto md:ml-0"
-    >
-      <LogOut size={16} />
-    </button>
+            {/* Logout Utility */}
+            <button 
+              onClick={handleLogout}
+              className="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-100 transition-colors ml-auto md:ml-0"
+            >
+              <LogOut size={16} />
+            </button>
 
-  </div>
-</header>
-
-
-
+          </div>
+        </header>
 
 {/* ****************************************************************** */}
 
@@ -276,13 +276,6 @@ export default function CMDashboard() {
 
             {/* Advanced Analytical Visualization Blocks */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-               
-
-
-
-
-
-
 
               {/* District Hotspot (Restored Stacked Layout and Legends) */}
               <div className="lg:col-span-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 transition-colors">
@@ -324,34 +317,28 @@ export default function CMDashboard() {
                 </div>
               </div>
 
-
-
 {/* ************************************************************************ */}
 
-<div className="h-[400px] w-full bg-gray-50 dark:bg-gray-800/50 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700/50 p-2 relative">
-  {/* The Map Component */}
-  <DistrictMap liveData={liveDistrictData} />
-  
-  {/* Floating Legend */}
-  <div className="absolute top-4 right-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-3 rounded-lg shadow-sm flex flex-col gap-2">
-    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Alert Severity</p>
-    <div className="flex items-center gap-2 text-xs font-medium">
-      <span className="w-3 h-3 rounded-sm bg-[#ef4444]"></span> Critical (20+)
-    </div>
-    <div className="flex items-center gap-2 text-xs font-medium">
-      <span className="w-3 h-3 rounded-sm bg-[#f59e0b]"></span> Elevated (10+)
-    </div>
-    <div className="flex items-center gap-2 text-xs font-medium">
-      <span className="w-3 h-3 rounded-sm bg-[#10b981]"></span> Safe (0-9)
-    </div>
-  </div>
-</div>
+              <div className="h-[400px] w-full bg-gray-50 dark:bg-gray-800/50 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700/50 p-2 relative">
+                {/* The Map Component */}
+                <DistrictMap liveData={liveDistrictData} />
+                
+                {/* Floating Legend */}
+                <div className="absolute top-4 right-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-3 rounded-lg shadow-sm flex flex-col gap-2">
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Alert Severity</p>
+                  <div className="flex items-center gap-2 text-xs font-medium">
+                    <span className="w-3 h-3 rounded-sm bg-[#ef4444]"></span> Critical (20+)
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-medium">
+                    <span className="w-3 h-3 rounded-sm bg-[#f59e0b]"></span> Elevated (10+)
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-medium">
+                    <span className="w-3 h-3 rounded-sm bg-[#10b981]"></span> Safe (0-9)
+                  </div>
+                </div>
+              </div>
 
 {/* ********************************************************************************* */}
-
-
-
-
 
               {/* Action Streams & Scores Right Panel */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full lg:col-span-3">

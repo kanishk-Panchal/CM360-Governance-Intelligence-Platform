@@ -21,7 +21,7 @@ const seedDatabase = async () => {
     const dummyUserId = new mongoose.Types.ObjectId(); // Generates a fake valid user ID
 
     // 3. Generate 30 randomized tickets
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 20; i++) {
       const status = statuses[Math.floor(Math.random() * statuses.length)];
       const isClosed = status === 'Closed';
 

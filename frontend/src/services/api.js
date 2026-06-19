@@ -9,7 +9,7 @@ baseURL: isProduction
 
 API.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('cm360_token');
+    const token = sessionStorage.getItem('cm360_token');
     
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

@@ -13,20 +13,16 @@ export default function OfficerApp() {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
   
-
   const [activeFilter, setActiveFilter] = useState('All');
   const [expandedId, setExpandedId] = useState(null);
-  const [isDark, setIsDark] = useState(false); // Theme State
-  
+  const [isDark, setIsDark] = useState(false); 
   
   const [tickets, setTickets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   
-  
   const [evidenceFiles, setEvidenceFiles] = useState({});
   const [resolvingId, setResolvingId] = useState(null);
 
-  
   const handleLogout = () => {
     localStorage.removeItem('cm360_token');
     setUser(null);
@@ -35,7 +31,7 @@ export default function OfficerApp() {
 
   const toggleTheme = () => setIsDark(!isDark);
 
-  // FETCH LIVE DATA
+  // FETCH LIVE DATA (Backend automatically filters for this specific officer!)
   const fetchTickets = async () => {
     try {
       setIsLoading(true);
@@ -52,13 +48,11 @@ export default function OfficerApp() {
     fetchTickets();
   }, []);
 
-  
   const getSlaDetails = (createdAt, priority) => {
     const created = new Date(createdAt);
     const now = new Date();
     const elapsedHours = Math.max(0, (now - created) / (1000 * 60 * 60)).toFixed(1);
 
-    
     let slaHours = 48; // Default Low
     if (priority === 'CRITICAL') slaHours = 4;
     else if (priority === 'High') slaHours = 12;
@@ -75,10 +69,8 @@ export default function OfficerApp() {
     return 'bg-green-500';
   };
 
-  
   const handleResolve = async (id) => {
     const file = evidenceFiles[id];
-    
     
     if (!file) {
       alert('ANTI-CORRUPTION ALERT: Photo evidence is strictly required to resolve this ticket. Please attach a photo.');
@@ -95,7 +87,6 @@ export default function OfficerApp() {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
-      
       setEvidenceFiles(prev => ({ ...prev, [id]: null }));
       setExpandedId(null);
       fetchTickets();
@@ -107,7 +98,6 @@ export default function OfficerApp() {
     }
   };
 
-  
   const priorityConfig = {
     CRITICAL: { badge: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800', dot: 'bg-red-500', accent: 'border-l-red-500' },
     High: { badge: 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800', dot: 'bg-orange-500', accent: 'border-l-orange-500' },
@@ -131,8 +121,10 @@ export default function OfficerApp() {
             
             <div className="flex items-start justify-between mb-4">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-0.5">
-                  Field Officer Portal
+                {/* PROUDLY DISPLAY THE DISTRICT JURISDICTION HERE */}
+                <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-0.5 flex items-center gap-1">
+                  <MapPin size={10} />
+                  {user?.district ? `${user.district} Jurisdiction` : 'Field Officer Portal'}
                 </p>
                 <h1 className="text-xl font-bold tracking-tight">
                   {user.name}
@@ -179,8 +171,6 @@ export default function OfficerApp() {
                 </div>
               ))}
             </div>
-
-
 
             <div className="flex gap-1.5 mt-3 overflow-x-auto pb-1 scrollbar-hide">
               {filters.map(f => (

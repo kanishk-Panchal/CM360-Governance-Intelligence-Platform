@@ -1,27 +1,28 @@
-import { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  // 1. Initialize state directly from sessionStorage
   const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem('cm360_user');
+    const savedUser = sessionStorage.getItem('cm360_user');
     return savedUser ? JSON.parse(savedUser) : null; 
   });
 
-  const login = (userData, token) => {
-    localStorage.setItem('cm360_token', token);
-    localStorage.setItem('cm360_user', JSON.stringify(userData)); 
-    setUser(userData);
-  };
+  // 2. THE MAGIC AUTO-SYNC: Whenever 'user' state changes, back it up to sessionStorage!
+  useEffect(() => {
+    if (user) {
+      sessionStorage.setItem('cm360_user', JSON.stringify(user));
+      // Token is usually set in the login form, but we ensure user data is safely stored here
+    } else {
+      sessionStorage.removeItem('cm360_user');
+      sessionStorage.removeItem('cm360_token');
+    }
+  }, [user]);
 
-  const logout = () => {
-    localStorage.removeItem('cm360_token');
-    localStorage.removeItem('cm360_user');
-    setUser(null);
-  };
-
+  // We only need user and setUser now. The useEffect does the heavy lifting.
   return (
-    <AuthContext.Provider value={{ user, setUser, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -26,8 +26,7 @@ const complaintSchema = new mongoose.Schema({
 
 
   reportedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  assignedOfficer: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  department: { type: String }, // Links to the Accountability Scoreboard
+assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },  department: { type: String }, // Links to the Accountability Scoreboard
 
   // Evidence 
   resolutionEvidence: [{ type: String }], // Array to hold Cloudinary image URLs

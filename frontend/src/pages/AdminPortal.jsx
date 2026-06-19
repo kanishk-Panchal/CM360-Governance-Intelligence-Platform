@@ -4,12 +4,29 @@ import { useNavigate } from 'react-router-dom';
 import { ShieldCheck, UserPlus, CheckCircle, LogOut, Phone } from 'lucide-react'; 
 import API from '../services/api';
 
+// MASTER DISTRICT LIST - Guarantees perfect matching with the Citizen Portal
+const DELHI_DISTRICTS = [
+  "Central Delhi",
+  "East Delhi",
+  "New Delhi",
+  "North Delhi",
+  "North East Delhi",
+  "North West Delhi",
+  "Shahdara",
+  "South Delhi",
+  "South East Delhi",
+  "South West Delhi",
+  "West Delhi"
+];
+
 export default function AdminPortal() {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
   
-  
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', password: '', role: 'Officer', department: 'Public Works (PWD)' });
+  // Added 'district' to initial state
+  const [formData, setFormData] = useState({ 
+    name: '', email: '', phone: '', password: '', role: 'Officer', department: 'Public Works (PWD)', district: '' 
+  });
   const [status, setStatus] = useState(null);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,7 +38,8 @@ export default function AdminPortal() {
     try {
       await API.post('/auth/register', formData);
       setStatus('success');
-      setFormData({ name: '', email: '', phone: '', password: '', role: 'Officer', department: 'Public Works (PWD)' });
+      // Reset state, keeping defaults
+      setFormData({ name: '', email: '', phone: '', password: '', role: 'Officer', department: 'Public Works (PWD)', district: '' });
       
       setTimeout(() => setStatus(null), 3000);
     } catch (error) {
@@ -110,10 +128,10 @@ export default function AdminPortal() {
               </div>
             </div>
 
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {formData.role === 'Officer' ? (
-                <div className="animate-in fade-in slide-in-from-top-2">
+            {/* Conditionally render Department and District only for Officers */}
+            {formData.role === 'Officer' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2">
+                <div>
                   <label className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-1 block">Department</label>
                   <select name="department" value={formData.department} onChange={handleChange} className="w-full px-4 py-3 bg-amber-50/50 border border-amber-200 rounded-xl text-sm font-bold text-gray-700 outline-none focus:border-amber-400 focus:bg-white transition-colors">
                     <option value="Public Works (PWD)">Public Works (PWD)</option>
@@ -121,10 +139,25 @@ export default function AdminPortal() {
                     <option value="Electricity (BSES)">Electricity (BSES)</option>
                   </select>
                 </div>
-              ) : (
-                <div className="hidden md:block"></div> 
-              )}
+                <div>
+                  <label className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-1 block">Assigned District</label>
+                  <select 
+                    name="district" 
+                    required={formData.role === 'Officer'} 
+                    value={formData.district} 
+                    onChange={handleChange} 
+                    className="w-full px-4 py-3 bg-amber-50/50 border border-amber-200 rounded-xl text-sm font-bold text-gray-700 outline-none focus:border-amber-400 focus:bg-white transition-colors"
+                  >
+                    <option value="" disabled>Select Jurisdiction</option>
+                    {DELHI_DISTRICTS.map((district) => (
+                      <option key={district} value={district}>{district}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
               
+            <div className="grid grid-cols-1 gap-4">
               <div>
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Temporary Password</label>
                 <input type="password" required name="password" value={formData.password} onChange={handleChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-indigo-400 focus:bg-white transition-colors" />

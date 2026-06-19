@@ -5,8 +5,23 @@ import API from '../services/api';
 import {
   PlusCircle, MapPin, Camera, Clock,
   CheckCircle, AlertTriangle, ChevronRight,
-  FileText, RotateCcw, Wifi, LogOut, Sun, Moon
+  FileText, RotateCcw, LogOut, Sun, Moon
 } from 'lucide-react';
+
+// MASTER DISTRICT LIST - Guarantees perfect matching with the backend and map
+const DELHI_DISTRICTS = [
+  "Central Delhi",
+  "East Delhi",
+  "New Delhi",
+  "North Delhi",
+  "North East Delhi",
+  "North West Delhi",
+  "Shahdara",
+  "South Delhi",
+  "South East Delhi",
+  "South West Delhi",
+  "West Delhi"
+];
 
 export default function CitizenPortal() {
   const { user, setUser } = useAuth();
@@ -20,13 +35,11 @@ export default function CitizenPortal() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-
   const [form, setForm] = useState({ 
     title: '', category: 'Roads & Traffic', description: '', district: '', address: '' 
   });
   const [evidenceFile, setEvidenceFile] = useState(null);
 
-  
   const handleLogout = () => {
     localStorage.removeItem('cm360_token');
     setUser(null);
@@ -84,7 +97,7 @@ export default function CitizenPortal() {
     }
   };
 
-  //  CITIZEN VERIFIES OR REJECTS RESOLUTION
+  // CITIZEN VERIFIES OR REJECTS RESOLUTION
   const handleVerify = async (id, confirmed) => {
     try {
       const newStatus = confirmed ? 'Closed' : 'Reopened';
@@ -96,7 +109,6 @@ export default function CitizenPortal() {
     }
   };
 
-  
   const statusConfig = {
     'Resolved_Pending_Verification': {
       label: 'Awaiting Verification',
@@ -154,7 +166,6 @@ export default function CitizenPortal() {
   return (
     <div className={isDark ? 'dark' : ''}>
       <div className="min-h-screen bg-[#F4F5F7] dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 pb-24 font-sans">
-
         
         <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-5 pt-8 pb-5 transition-colors">
           <div className="max-w-md mx-auto">
@@ -165,7 +176,7 @@ export default function CitizenPortal() {
                   Delhi Resolve
                 </p>
                 <h1 className="text-xl font-bold tracking-tight">
-                  Welcome, {user.name}
+                  Welcome, {user?.name || "Citizen"}
                 </h1>
               </div>
               
@@ -204,7 +215,6 @@ export default function CitizenPortal() {
                 </div>
               ))}
             </div>
-
             
             <div className="flex bg-gray-100 dark:bg-gray-900/50 p-1 mt-4 rounded-xl">
               <button
@@ -232,11 +242,9 @@ export default function CitizenPortal() {
         </header>
 
         <main className="max-w-md mx-auto px-4 mt-4">
-
-        
+          
           {activeTab === 'report' && (
             <form onSubmit={handleSubmit} className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
-
               <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow-sm transition-colors">
                 <div className="flex items-center gap-2 mb-5">
                   <PlusCircle size={16} className="text-indigo-600 dark:text-indigo-400" />
@@ -265,7 +273,18 @@ export default function CitizenPortal() {
                   <div className="flex gap-2">
                     <div className="w-1/2">
                       <label className="block text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1.5">District *</label>
-                      <input type="text" required placeholder="e.g., Rohini" value={form.district} onChange={e => setForm({ ...form, district: e.target.value })} className="w-full px-4 py-3 text-sm bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:border-indigo-400 focus:bg-white dark:focus:bg-gray-800 transition-colors placeholder:text-gray-400" />
+                      {/* UPDATED DISTRICT DROPDOWN */}
+                      <select
+                        required
+                        value={form.district}
+                        onChange={e => setForm({ ...form, district: e.target.value })}
+                        className="w-full px-4 py-3 text-sm bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:border-indigo-400 focus:bg-white dark:focus:bg-gray-800 transition-colors"
+                      >
+                        <option value="" disabled>Select District</option>
+                        {DELHI_DISTRICTS.map((district) => (
+                          <option key={district} value={district}>{district}</option>
+                        ))}
+                      </select>
                     </div>
                     <div className="w-1/2">
                       <label className="block text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1.5">Exact Address *</label>
@@ -303,7 +322,6 @@ export default function CitizenPortal() {
             </form>
           )}
 
-          
           {activeTab === 'track' && (
             <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
               
@@ -343,7 +361,6 @@ export default function CitizenPortal() {
                         </div>
                       </div>
 
-                      
                       {complaint.status === 'Resolved_Pending_Verification' && (
                         <div className="mx-4 mb-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-xl p-3.5">
                           <div className="flex items-start gap-2 mb-3">
@@ -360,7 +377,6 @@ export default function CitizenPortal() {
                         </div>
                       )}
 
-                      
                       {complaint.status !== 'Resolved_Pending_Verification' && (
                         <div className="border-t border-gray-100 dark:border-gray-700 px-5 py-3 flex items-center justify-between">
                           <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
@@ -377,7 +393,6 @@ export default function CitizenPortal() {
                 })
               )}
 
-              
               <button onClick={() => setActiveTab('report')} className="w-full flex items-center justify-center gap-2 border border-dashed border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 py-4 rounded-2xl text-sm font-medium hover:bg-white dark:hover:bg-gray-800 transition-all shadow-sm mt-4">
                 <PlusCircle size={15} /> File a new complaint
               </button>
