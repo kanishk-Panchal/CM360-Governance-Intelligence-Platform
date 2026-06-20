@@ -9,6 +9,7 @@
 [![Backend](https://img.shields.io/badge/Backend-Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)]()
 [![Database](https://img.shields.io/badge/Database-MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)]()
 [![Status](https://img.shields.io/badge/Status-Deployed-success?style=for-the-badge)]()
+[![Mobile Friendly](https://img.shields.io/badge/Mobile-Friendly-orange?style=for-the-badge&logo=googlechrome&logoColor=white)]()
 
 ### 🚨 [CLICK HERE TO VIEW THE LIVE PROJECT](https://cm360-orpin.vercel.app/) 🚨
 
@@ -19,7 +20,7 @@
 ## 📸 Product Preview
 
 <div align="center">
-<img src="./assets/cm-dashboard.png" alt="CM360 Command Center Dashboard" width="850"/>
+<img src="./assets/cmdashboard.png" alt="CM360 Command Center Dashboard" width="850"/>
 <p><em>The CM Command Center — live district hotspots, citizen trust index, and critical alert monitoring.</em></p>
 </div>
 
@@ -53,6 +54,7 @@ CM360 closes the loop structurally, not procedurally — the system makes false 
 - **Department Accountability Scoreboard** — Algorithmic performance scoring based on verified closures, not self-reported status.
 - **Secure Evidence Vault** — Cloudinary-backed, immutable photo storage for both citizen-filed and officer-resolved evidence.
 - **Role-Based Access Control (RBAC)** — Strict JWT-driven middleware enforcing data isolation between Citizens, Officers, and Admins.
+- **Fully Mobile Responsive** — All four portals (CM, Officer, Citizen, Admin) are built mobile-first with Tailwind, so the CM or any officer can review and act on grievances directly from a phone in the field.
 
 ---
 
@@ -62,7 +64,7 @@ The platform is fully deployed and ready for review — no setup required.
 
 **🔗 Live Link:** [https://cm360-orpin.vercel.app/](https://cm360-orpin.vercel.app/)
 
-> 💡 **Recommended for reviewers:** Open two browser windows side-by-side — one logged in as **Citizen**, one as **Officer** — and watch a grievance move through the full lifecycle in real time.
+
 
 ### 🔑 Demo Accounts
 
@@ -73,6 +75,38 @@ The platform is fully deployed and ready for review — no setup required.
 | 👤 **Citizen** | `kanishk@gmail.com` | `12345` | File grievances, track live status, verify or reject officer resolutions |
 | 👤 **Admin** | `admin@gmail` | `12345` | Admin portal, add and manage department officers |
 
+## 🧭 Reviewer Walkthrough — See the Full Loop in 5 Minutes
+ 
+The fastest way to evaluate CM360 is to follow the grievance through its **entire lifecycle** — from citizen filing to officer resolution to citizen verification to its impact on CM-level analytics. Follow these steps in order:
+  
+**Step 1 — File a complaint as Citizen**
+Log in with the **Citizen** credentials above. File a new grievance and select:
+- **District:** `Central Delhi`
+- **Department:** `Water & Sanitation`
+> ⚠️ These exact values are required for the demo — the seeded database currently has an officer mapped only to Water & Sanitation in Central Delhi. Other combinations will not show an assigned officer.
+ 
+**Step 2 — Check the CM Dashboard**
+Log in with the **CM / Admin** credentials. You'll see the new ticket reflected in the live counters (moving from `0` to `1`) and appearing on the **District Hotspot Map** for Central Delhi.
+ 
+**Step 3 — Resolve it as Officer**
+Log in with the **Officer** credentials. You'll see the complaint as an **assigned card**. Open it and use the **Upload Proof** card to attach a resolution photo, then press **Submit**.
+ 
+**Step 4 — Reject the resolution as Citizen (test the trust loop)**
+Go back to the **Citizen** login. You'll now see a **verification request** with two options: **Yes** and **No, Reopen**. Select **No, Reopen** to simulate a disputed resolution.
+ 
+**Step 5 — Confirm the reopen impacts CM analytics**
+Return to the **CM Dashboard**. You'll see the **Reopen Rate** increase — proof that false or disputed closures are reflected immediately in accountability metrics, not hidden.
+ 
+**Step 6 — Resolve it properly as Officer**
+Go back to the **Officer** login and upload evidence again on the same ticket.
+ 
+**Step 7 — Verify and close as Citizen**
+Return to the **Citizen** login and this time click **Yes** to confirm the resolution.
+ 
+**Step 8 — Watch the Citizen Trust Index respond**
+Go back to the **CM Dashboard** one final time — you'll see the **Citizen Trust Index** update, reflecting the verified, citizen-confirmed resolution.
+ 
+This full loop is the core of what CM360 is built to prove: **no ticket is truly closed until the citizen says so, and every dispute is visible at the CM level in real time.**
 
 ---
 
@@ -169,12 +203,14 @@ The app will be running at `http://localhost:5173` (frontend) and `http://localh
 
 ## 👥 Team zerolatency
 
+### ~ kanishk Panchal
+### ~ Manish Verma
+
 ---
 
 ## 📄 License
 
-This project was built for submission to the Delhi Government Hackathon initiative. All rights reserved unless otherwise specified.
-
+### The platform is fully deployed. Judges and reviewers can immediately explore the system using the live link and test credentials
 ---
 
 <div align="center">
