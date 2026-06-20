@@ -133,11 +133,20 @@ export default function AdminPortal() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2">
                 <div>
                   <label className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-1 block">Department</label>
-                  <select name="department" value={formData.department} onChange={handleChange} className="w-full px-4 py-3 bg-amber-50/50 border border-amber-200 rounded-xl text-sm font-bold text-gray-700 outline-none focus:border-amber-400 focus:bg-white transition-colors">
-                    <option value="Public Works (PWD)">Public Works (PWD)</option>
-                    <option value="Water Board (DJB)">Water Board (DJB)</option>
-                    <option value="Electricity (BSES)">Electricity (BSES)</option>
-                  </select>
+                 <select 
+  name="department" 
+  value={formData.department} 
+  onChange={handleChange} 
+  className="w-full px-4 py-3 bg-amber-50/50 border border-amber-200 rounded-xl text-sm font-bold text-gray-700 outline-none focus:border-amber-400 focus:bg-white transition-colors"
+>
+  <option value="" disabled>Select Department</option>
+  {/* The 'value' must be exact, but the text the admin reads can have the acronyms! */}
+  <option value="Roads & Traffic">Roads & Traffic (PWD)</option>
+  <option value="Water & Sanitation">Water & Sanitation (DJB)</option>
+  <option value="Electricity">Electricity (BSES)</option>
+  <option value="Garbage & Sanitation">Garbage & Sanitation (MCD)</option>
+  <option value="Public Safety">Public Safety (Police)</option>
+</select>
                 </div>
                 <div>
                   <label className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-1 block">Assigned District</label>

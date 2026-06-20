@@ -12,6 +12,16 @@ const userSchema = new mongoose.Schema({
     default: 'Citizen' 
   },
 
+  department: { 
+    type: String, 
+    enum: [
+      'Roads & Traffic', 
+      'Water & Sanitation', 
+      'Electricity', 
+      'Garbage & Sanitation', 
+      'Public Safety'
+    ]
+  },
 
   district: { type: String, required: false },
   department: { type: String, required: false } 

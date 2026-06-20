@@ -15,7 +15,8 @@ export const createComplaint = async (req, res) => {
     // Look in the database for an Officer assigned to this exact district
     const matchingOfficer = await User.findOne({ 
       role: 'Officer', 
-      district: district 
+      district: district,
+      department: category
     });
     // --- MAGIC ROUTING END ---
     
