@@ -82,9 +82,10 @@ export default function CitizenPortal() {
       formData.append('address', form.address);
       if (evidenceFile) formData.append('image', evidenceFile);
 
-      await API.post('/complaints', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      await API.post('/complaints', formData) 
+      //   {
+      //   headers: { 'Content-Type': 'multipart/form-data' }
+      // });
 
       setForm({ title: '', category: 'Roads & Traffic', description: '', district: '', address: '' });
       setEvidenceFile(null);
