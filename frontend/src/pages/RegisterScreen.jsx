@@ -34,7 +34,7 @@ export default function RegisterScreen() {
       const userData = response.data;
 
       setSuccess(true);
-      localStorage.setItem('cm360_token', userData.token);
+      sessionStorage.setItem('cm360_token', userData.token);
 
       setTimeout(() => {
         setUser({
