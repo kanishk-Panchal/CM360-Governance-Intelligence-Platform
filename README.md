@@ -2,7 +2,7 @@
 
 # 🏛️ CM360 — Governance Intelligence Platform
 
-**A real-time, evidence-verified grievance accountability system built for the Office of the Chief Minister, Delhi.**
+**CM360 is a real-time, closed-loop grievance monitoring and accountability system designed for Chief Ministers, government officials and everyday citizens. It bridges the gap between public reporting and bureaucratic action through automated routing, live analytics, and strict evidence-based verification.**
 
 [![Live Demo](https://img.shields.io/badge/Demo-Live_Site-blue?style=for-the-badge)](https://cm360-orpin.vercel.app/)
 [![Frontend](https://img.shields.io/badge/Frontend-React-61DAFB?style=for-the-badge&logo=react&logoColor=black)]()
@@ -10,7 +10,7 @@
 [![Database](https://img.shields.io/badge/Database-MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)]()
 [![Status](https://img.shields.io/badge/Status-Deployed-success?style=for-the-badge)]()
 
-[**Live Demo**](https://cm360-orpin.vercel.app/) · [**Report Bug**](#) · [**Request Feature**](#)
+### 🚨 [CLICK HERE TO VIEW THE LIVE PROJECT](https://cm360-orpin.vercel.app/) 🚨
 
 </div>
 
@@ -19,11 +19,11 @@
 ## 📸 Product Preview
 
 <div align="center">
-<img src="./assets/cm-dashboard-screenshot.png" alt="CM360 Command Center Dashboard" width="850"/>
+<img src="./assets/cm-dashboard.png" alt="CM360 Command Center Dashboard" width="850"/>
 <p><em>The CM Command Center — live district hotspots, citizen trust index, and critical alert monitoring.</em></p>
 </div>
 
-> 📌 **Note:** Add screenshots of the Citizen Portal and Officer Dashboard here for a complete visual walkthrough. Recommended: `1280×800`, PNG, browser chrome cropped.
+>
 
 ---
 
@@ -68,11 +68,11 @@ The platform is fully deployed and ready for review — no setup required.
 
 | Role | Email | Password | Access Level |
 |---|---|---|---|
-| 🏛️ **Chief Minister / Admin** | `admin@cm360.gov.in` | `admin123` | CM Command Center, live district hotspots, departmental accountability scores |
-| 👮 **Department Officer** | `officer@cm360.gov.in` | `officer123` | Assigned district tickets; must upload photo evidence to resolve grievances |
-| 👤 **Citizen** | `citizen@cm360.gov.in` | `citizen123` | File grievances, track live status, verify or reject officer resolutions |
+| 🏛️ **Chief Minister / Admin** | `cm@delhi.gov.in` | `12345` | CM Command Center, live district hotspots, departmental accountability scores |
+| 👮 **Department Officer** | `sanjay@gmail.com` | `12345` | Assigned district tickets; must upload photo evidence to resolve grievances |
+| 👤 **Citizen** | `kanishk@gmail.com` | `12345` | File grievances, track live status, verify or reject officer resolutions |
+| 👤 **Admin** | `admin@gmail` | `12345` | Admin portal, add and manage department officers |
 
-> ⚠️ Replace the credentials above with your actual seeded demo accounts before submission.
 
 ---
 
@@ -120,11 +120,11 @@ cd YourRepoName
 ### 2. Install dependencies
 ```bash
 # Backend
-cd server
+cd backend
 npm install
 
 # Frontend
-cd ../client
+cd frontend
 npm install
 ```
 
@@ -141,20 +141,15 @@ CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 ```
 
-Create a `.env` file inside `/client`:
-
-```env
-VITE_API_BASE_URL=http://localhost:5000/api
-```
 
 ### 4. Run the application
 ```bash
 # Terminal 1 — start backend
-cd server
+cd backend
 npm run dev
 
 # Terminal 2 — start frontend
-cd client
+cd frontend
 npm run dev
 ```
 
@@ -172,13 +167,7 @@ The app will be running at `http://localhost:5173` (frontend) and `http://localh
 
 ---
 
-## 👥 Team
-
-| Name | Role |
-|---|---|
-| *Your Name* | Full Stack Lead |
-| *Teammate* | Frontend / UI |
-| *Teammate* | Backend / Integrations |
+## 👥 Team zerolatency
 
 ---
 
