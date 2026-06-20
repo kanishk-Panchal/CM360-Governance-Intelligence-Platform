@@ -1,68 +1,198 @@
-# CM360 - Governance Intelligence Platform
+<div align="center">
 
-CM360 is a real-time grievance management and accountability monitoring platform designed for the Office of the Chief Minister.
+# 🏛️ CM360 — Governance Intelligence Platform
 
-## Problem Statement
+**A real-time, evidence-verified grievance accountability system built for the Office of the Chief Minister, Delhi.**
 
-Delhi receives thousands of citizen grievances across multiple departments. Existing systems often suffer from fragmented workflows, poor visibility, delayed resolutions, and lack of accountability.
+[![Live Demo](https://img.shields.io/badge/Demo-Live_Site-blue?style=for-the-badge)](https://cm360-orpin.vercel.app/)
+[![Frontend](https://img.shields.io/badge/Frontend-React-61DAFB?style=for-the-badge&logo=react&logoColor=black)]()
+[![Backend](https://img.shields.io/badge/Backend-Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)]()
+[![Database](https://img.shields.io/badge/Database-MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)]()
+[![Status](https://img.shields.io/badge/Status-Deployed-success?style=for-the-badge)]()
 
-CM360 provides a centralized command center for monitoring, tracking, analyzing, and improving grievance resolution across departments.
+[**Live Demo**](https://cm360-orpin.vercel.app/) · [**Report Bug**](#) · [**Request Feature**](#)
 
-## Key Features
+</div>
 
-### Citizen Portal
+---
 
-* Complaint Registration
-* Complaint Tracking
-* Resolution Verification
-* Notifications & Updates
+## 📸 Product Preview
 
-### CM Dashboard
+<div align="center">
+<img src="./assets/cm-dashboard-screenshot.png" alt="CM360 Command Center Dashboard" width="850"/>
+<p><em>The CM Command Center — live district hotspots, citizen trust index, and critical alert monitoring.</em></p>
+</div>
 
-* Real-Time Governance Overview
-* District Hotspot Analysis
-* Critical Alert Monitoring
-* Accountability Score Dashboard
-* Department Performance Tracking
+> 📌 **Note:** Add screenshots of the Citizen Portal and Officer Dashboard here for a complete visual walkthrough. Recommended: `1280×800`, PNG, browser chrome cropped.
 
-### Anti False Closure Engine
+---
 
-* Citizen Verification Workflow
-* Reopened Complaint Detection
-* Suspicious Closure Identification
+## 🎯 The Problem
 
-### Accountability Score System
+Traditional grievance systems suffer from **"black hole" reporting** — citizens file complaints and never hear back, while top officials have no real oversight into which departments are actually resolving issues versus quietly closing tickets without action.
 
-* Officer Performance Metrics
-* Department Ranking
-* SLA Compliance Monitoring
+This isn't a tooling gap. It's an **accountability gap**, and most systems are built in a way that lets it persist.
 
-## Technology Stack
+## 💡 The Solution
 
-### Frontend
+CM360 closes the loop structurally, not procedurally — the system makes false closures and silent stalling difficult, rather than just discouraging them as policy.
 
-* React
-* Tailwind CSS
-* Recharts
+| Mechanism | What It Does |
+|---|---|
+| 🧭 **Automated Magic Routing** | Every grievance is auto-assigned to the exact officer responsible for that district + department — no manual sorting, no bounced tickets. |
+| 📷 **Anti-Corruption Verification** | Officers cannot mark a ticket "Resolved" by clicking a button. They are structurally required to upload photographic evidence of the fix. |
+| ✅ **Citizen Trust Loop** | A ticket is only permanently closed once the citizen verifies the resolution. Rejected fixes reopen automatically and impact the department's accountability score. |
+| 📊 **Live Department Scoreboard** | Every department (PWD, DJB, BSES) is ranked on real, verified closures — not self-reported numbers. |
 
-### Backend
+---
 
-* Node.js
-* Express.js
-* MongoDB
+## ✨ Key Features
 
-### Deployment
+- **CM Command Center** — A high-level analytics dashboard with live sync, critical alert monitoring, and a real-time Citizen Trust Index.
+- **District Hotspot Mapping** — Live visual distribution of grievances across jurisdictions, built with Recharts.
+- **Department Accountability Scoreboard** — Algorithmic performance scoring based on verified closures, not self-reported status.
+- **Secure Evidence Vault** — Cloudinary-backed, immutable photo storage for both citizen-filed and officer-resolved evidence.
+- **Role-Based Access Control (RBAC)** — Strict JWT-driven middleware enforcing data isolation between Citizens, Officers, and Admins.
 
-* Vercel (Frontend)
-* Render (Backend)
+---
 
-## Team
+## 🚀 Live Demo & Test Access
 
-Team Name: ZeroLatency
+The platform is fully deployed and ready for review — no setup required.
 
-Members:
-* Team Member 2
+**🔗 Live Link:** [https://cm360-orpin.vercel.app/](https://cm360-orpin.vercel.app/)
 
-## Vision
+> 💡 **Recommended for reviewers:** Open two browser windows side-by-side — one logged in as **Citizen**, one as **Officer** — and watch a grievance move through the full lifecycle in real time.
 
-To create a transparent, accountable, and citizen-centric grievance resolution platform that enables data-driven governance and improves public trust.
+### 🔑 Demo Accounts
+
+| Role | Email | Password | Access Level |
+|---|---|---|---|
+| 🏛️ **Chief Minister / Admin** | `admin@cm360.gov.in` | `admin123` | CM Command Center, live district hotspots, departmental accountability scores |
+| 👮 **Department Officer** | `officer@cm360.gov.in` | `officer123` | Assigned district tickets; must upload photo evidence to resolve grievances |
+| 👤 **Citizen** | `citizen@cm360.gov.in` | `citizen123` | File grievances, track live status, verify or reject officer resolutions |
+
+> ⚠️ Replace the credentials above with your actual seeded demo accounts before submission.
+
+---
+
+## 🛠️ Technical Architecture
+
+Built on the **MERN** stack with a fully decoupled, independently scalable frontend and backend.
+
+```
+┌─────────────────┐      ┌──────────────────┐      ┌─────────────────┐
+│   React.js       │ ───▶ │   Node.js /        │ ───▶ │   MongoDB Atlas   │
+│   Tailwind CSS    │      │   Express.js       │      │   Mongoose ODM    │
+│   Recharts         │      │   JWT Auth Layer   │      │   Schema Validation│
+│   (Vercel)          │      │   (Render)           │      │                     │
+└─────────────────┘      └──────────────────┘      └─────────────────┘
+                                    │
+                                    ▼
+                          ┌──────────────────┐
+                          │   Cloudinary API   │
+                          │   Evidence Storage  │
+                          └──────────────────┘
+```
+
+| Layer | Technology | Notes |
+|---|---|---|
+| **Frontend** | React.js, Tailwind CSS, Lucide Icons, Recharts | Hosted on Vercel |
+| **Backend** | Node.js, Express.js, JWT Authentication | Hosted on Render |
+| **Database** | MongoDB Atlas + Mongoose ODM | Strict enum schema validation |
+| **Storage** | Cloudinary API | Multipart/form-data image handling for evidence uploads |
+
+---
+
+## 💻 Local Setup & Installation
+
+### Prerequisites
+- Node.js (v16+)
+- MongoDB Atlas account
+- Cloudinary account
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/YourUsername/YourRepoName.git
+cd YourRepoName
+```
+
+### 2. Install dependencies
+```bash
+# Backend
+cd server
+npm install
+
+# Frontend
+cd ../client
+npm install
+```
+
+### 3. Configure environment variables
+
+Create a `.env` file inside `/server`:
+
+```env
+PORT=5000
+MONGO_URI=your_mongodb_atlas_connection_string
+JWT_SECRET=your_jwt_secret_key
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+```
+
+Create a `.env` file inside `/client`:
+
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
+```
+
+### 4. Run the application
+```bash
+# Terminal 1 — start backend
+cd server
+npm run dev
+
+# Terminal 2 — start frontend
+cd client
+npm run dev
+```
+
+The app will be running at `http://localhost:5173` (frontend) and `http://localhost:5000` (backend API).
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] WhatsApp Business API integration for grievance filing
+- [ ] MCD311 API sync with graceful fallback
+- [ ] AI-based auto-categorization and duplicate detection
+- [ ] Officer fraud-score analytics dashboard
+- [ ] Multi-language support (Hindi, Punjabi, Urdu)
+
+---
+
+## 👥 Team
+
+| Name | Role |
+|---|---|
+| *Your Name* | Full Stack Lead |
+| *Teammate* | Frontend / UI |
+| *Teammate* | Backend / Integrations |
+
+---
+
+## 📄 License
+
+This project was built for submission to the Delhi Government Hackathon initiative. All rights reserved unless otherwise specified.
+
+---
+
+<div align="center">
+
+**Built to close the loop between citizens and government.**
+
+[Live Demo](https://cm360-orpin.vercel.app/) · Made with ❤️ for Delhi
+
+</div>
+
