@@ -20,9 +20,16 @@
 ## 📸 Product Preview
 
 <div align="center">
-<img src="./assets/cmdashboard.png" alt="CM360 Command Center Dashboard" width="850"/>
-<p><em>The CM Command Center — live district hotspots, citizen trust index, and critical alert monitoring.</em></p>
+<img src="./assets/cmdashboard2.png" alt="CM360 Command Center Dashboard" width="800"/>
 </div>
+
+##
+
+<div align="center">
+<img src="./assets/cmdashboard.png" alt="CM360 Command Center Dashboard" width="800"/>
+<p><em>The CM Command Center — live district hotspots, citizen trust index, and critical alert monitoring.</em> (see more preview in assets folder)</p>
+</div>
+
 
 >
 
@@ -148,7 +155,6 @@ Built on the **MERN** stack with a fully decoupled, independently scalable front
 ### 1. Clone the repository
 ```bash
 git clone https://github.com/kanishk-Panchal/CM360-Governance-Intelligence-Platform.git
-cd YourRepoName
 ```
 
 ### 2. Install dependencies
