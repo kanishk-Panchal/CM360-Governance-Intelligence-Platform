@@ -70,10 +70,10 @@ The platform is fully deployed and ready for review — no setup required.
 
 | Role | Email | Password | Access Level |
 |---|---|---|---|
-| 🏛️ **Chief Minister / Admin** | `cm@delhi.gov.in` | `12345` | CM Command Center, live district hotspots, departmental accountability scores |
+| 🏛️ **Chief Minister** | `cm@delhi.gov.in` | `12345` | CM Command Center, live district hotspots, departmental accountability scores |
 | 👮 **Department Officer** | `sanjay@gmail.com` | `12345` | Assigned district tickets; must upload photo evidence to resolve grievances |
 | 👤 **Citizen** | `kanishk@gmail.com` | `12345` | File grievances, track live status, verify or reject officer resolutions |
-| 👤 **Admin** | `admin@gmail` | `12345` | Admin portal, add and manage department officers |
+| 👨🏻‍💻 **Admin** | `admin@gmail.com` | `12345` | Admin portal, add and manage department officers |
 
 ## 🧭 Reviewer Walkthrough — See the Full Loop in 5 Minutes
  
@@ -147,7 +147,7 @@ Built on the **MERN** stack with a fully decoupled, independently scalable front
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/YourUsername/YourRepoName.git
+git clone https://github.com/kanishk-Panchal/CM360-Governance-Intelligence-Platform.git
 cd YourRepoName
 ```
 
