@@ -57,8 +57,9 @@ CM360 closes the loop structurally, not procedurally — the system makes false 
 ## ✨ Key Features
 
 - **CM Command Center** — A high-level analytics dashboard with live sync, critical alert monitoring, and a real-time Citizen Trust Index.
-- **District Hotspot Mapping** — Live visual distribution of grievances across jurisdictions, built with Recharts.
+- **District Hotspot Mapping** — Live visual distribution of grievances across Districts, built with Recharts.
 - **Department Accountability Scoreboard** — Algorithmic performance scoring based on verified closures, not self-reported status.
+- **The Citizen Trust Loop**: A dual-verification pipeline where the citizen who filed the grievance holds the final authority to permanently close the ticket or reopen it if the officer's resolution is unsatisfactory.
 - **Secure Evidence Vault** — Cloudinary-backed, immutable photo storage for both citizen-filed and officer-resolved evidence.
 - **Role-Based Access Control (RBAC)** — Strict JWT-driven middleware enforcing data isolation between Citizens, Officers, and Admins.
 - **Fully Mobile Responsive** — All four portals (CM, Officer, Citizen, Admin) are built mobile-first with Tailwind, so the CM or any officer can review and act on grievances directly from a phone in the field.
