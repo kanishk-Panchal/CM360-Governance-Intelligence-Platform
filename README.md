@@ -76,6 +76,8 @@ The platform is fully deployed and ready for review — no setup required.
 
 ### 🔑 Demo Accounts
 
+> ⚠️ Login page is same for every role - After successful authentication, the platform automatically identifies the user's role and redirects them to the appropriate dashboard.
+
 | Role | Email | Password | Access Level |
 |---|---|---|---|
 | 🏛️ **Chief Minister** | `cm@delhi.gov.in` | `12345` | CM Command Center, live district hotspots, departmental accountability scores |
